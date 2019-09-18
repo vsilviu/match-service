@@ -2,7 +2,7 @@ var stompClient = null;
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
-    // $("#messages").prop("hidden", !connected);
+    $("#device-commands").prop("hidden", !connected);
     // $("#privateMessages").prop("hidden", !connected);
     // $("#name").prop("readonly", connected);
     // $("#disconnect").prop("disabled", !connected);
@@ -26,9 +26,9 @@ function connect() {
         stompClient.subscribe('/topic/connect', function (connectMessage) {
             displayMessage(JSON.parse(connectMessage.body).text);
         });
-        // stompClient.subscribe('/topic/message', function (greeting) {
-        //     displayMessage(JSON.parse(greeting.body).content);
-        // });
+        stompClient.subscribe('/topic/command', function (commandMessage) {
+            displayMessage(JSON.parse(commandMessage.body).text);
+        });
         // stompClient.subscribe('/topic/disconnect', function (greeting) {
         //     displayMessage(JSON.parse(greeting.body).content);
         // });
@@ -53,11 +53,11 @@ function sendClientId() {
     stompClient.send("/app/connect/" + $("#name").val(), {}, null);
 }
 //
-// function sendMessage() {
-//     var message = $("#message")
-//     stompClient.send("/app/message", {}, JSON.stringify({'message': message.val()}));
-//     message.val("");
-// }
+function sendDeviceCommand() {
+    var command = $("#device-command");
+    stompClient.send("/app/command/" + command.val(), {}, JSON.stringify({'command': command.val()}));
+    command.val("");
+}
 //
 // function sendPrivateMessage() {
 //     var message = $("#privateMessage")
@@ -95,9 +95,9 @@ $(function () {
     // $("#send").click(function () {
     //     sendName();
     // });
-    // $("#sendMessage").click(function () {
-    //     sendMessage();
-    // });
+    $("#send-device-command").click(function () {
+        sendDeviceCommand();
+    });
     // $("#sendPrivateMessage").click(function () {
     //     sendPrivateMessage();
     // });

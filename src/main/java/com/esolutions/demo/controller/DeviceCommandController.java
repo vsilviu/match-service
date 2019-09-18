@@ -2,6 +2,7 @@ package com.esolutions.demo.controller;
 
 import com.esolutions.demo.config.ConnectedDeviceConfig;
 import com.esolutions.demo.model.Content;
+import com.esolutions.demo.model.DeviceAction;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -13,22 +14,21 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class ConnectDeviceController {
+public class DeviceCommandController {
 
     private final MqttClient mqttClient;
 
     @Autowired
-    public ConnectDeviceController(MqttClient mqttClient) {
+    public DeviceCommandController(MqttClient mqttClient) {
         this.mqttClient = mqttClient;
     }
 
-    @MessageMapping("/connect/{clientId}")
-    @SendTo("/topic/connect")
-    public Content register(@DestinationVariable("clientId") String clientId, @Header("simpSessionId") String sessionId) throws MqttException {
-        //todo implement the mqtt logic here
-        mqttClient.publish(String.format("/match/%s", clientId), new MqttMessage(String.format("Hello from %s", sessionId).getBytes()));
-        ConnectedDeviceConfig.persistDeviceConnection(clientId, sessionId);
-        return new Content(String.format("[%s] : Successfully connected to client id %s", sessionId, clientId));
+    @MessageMapping("/command/{action}")
+    @SendTo("/topic/command")
+    public Content sendCommand(@DestinationVariable DeviceAction action, @Header("simpSessionId") String sessionId) throws MqttException {
+        String clientId = ConnectedDeviceConfig.getClientIdBySessionId(sessionId);
+        mqttClient.publish(String.format("/match/command/%s", clientId), new MqttMessage((action.name() + "#" + sessionId).getBytes()));
+        return new Content(String.format("[%s] : Successfully sent command [%s] to client id [%s]", sessionId, action, clientId));
     }
 
 }

@@ -1,9 +1,6 @@
 package com.esolutions.demo.config;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ConnectedDeviceConfig {
 
@@ -18,10 +15,14 @@ public class ConnectedDeviceConfig {
         if (deviceIds.contains(clientId) == Boolean.FALSE) {
             throw new IllegalStateException("Non-Existent Client ID!");
         }
-        if (connectedDeviceMap.keySet().contains(clientId)) {
-            throw new IllegalStateException("Cannot add the same client id twice!");
+        if (connectedDeviceMap.keySet().contains(sessionId)) {
+            throw new IllegalStateException("Cannot add the same session id twice!");
         }
-        connectedDeviceMap.put(clientId, sessionId);
+        connectedDeviceMap.put(sessionId, clientId);
+    }
+
+    public static String getClientIdBySessionId(String sessionId) {
+        return Objects.requireNonNull(connectedDeviceMap.get(sessionId), "No Client ID for session " + sessionId);
     }
 
 }
