@@ -1,6 +1,7 @@
 package com.esolutions.demo.controller;
 
 import com.esolutions.demo.config.ConnectedDeviceConfig;
+import com.esolutions.demo.model.Content;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -12,10 +13,10 @@ public class ConnectDeviceController {
 
     @MessageMapping("/connect/{clientId}")
     @SendTo("/topic/connect")
-    public String register(@DestinationVariable("clientId") String clientId, @Header("simpSessionId") String sessionId) {
+    public Content register(@DestinationVariable("clientId") String clientId, @Header("simpSessionId") String sessionId) {
         //todo implement the mqtt logic here
         ConnectedDeviceConfig.persistDeviceConnection(clientId, sessionId);
-        return String.format("Successfully connected to client id %s", clientId);
+        return new Content(String.format("[%s] : Successfully connected to client id %s", sessionId, clientId));
     }
 
 }

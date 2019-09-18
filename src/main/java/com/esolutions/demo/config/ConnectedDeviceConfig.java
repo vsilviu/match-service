@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ConnectedDeviceConfig {
 
-    private static final Collection<String> deviceIds = Arrays.asList("a", "b", "c", "d");
+    private static final Collection<String> deviceIds = Arrays.asList("tennis-1", "tennis-2", "tennis-3", "tennis-4");
     private static final Map<String, String> connectedDeviceMap = new HashMap<>();
 
     public ConnectedDeviceConfig() {
