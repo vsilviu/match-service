@@ -29,6 +29,9 @@ function connect() {
         stompClient.subscribe('/topic/command', function (commandMessage) {
             displayMessage(JSON.parse(commandMessage.body).text);
         });
+        stompClient.subscribe('/topic/stats', function (deviceStatsMessage) {
+            displayMessage(JSON.parse(deviceStatsMessage.body).text);
+        });
         // stompClient.subscribe('/topic/disconnect', function (greeting) {
         //     displayMessage(JSON.parse(greeting.body).content);
         // });

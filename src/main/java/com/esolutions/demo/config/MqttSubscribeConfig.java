@@ -1,8 +1,10 @@
 package com.esolutions.demo.config;
 
+import com.esolutions.demo.model.Content;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -11,10 +13,12 @@ import javax.annotation.PostConstruct;
 public class MqttSubscribeConfig {
 
     private final MqttClient mqttClient;
+    private final SimpMessagingTemplate webSocket;
 
     @Autowired
-    public MqttSubscribeConfig(MqttClient mqttClient) {
+    public MqttSubscribeConfig(MqttClient mqttClient, SimpMessagingTemplate webSocket) {
         this.mqttClient = mqttClient;
+        this.webSocket = webSocket;
     }
 
     @PostConstruct
@@ -25,7 +29,9 @@ public class MqttSubscribeConfig {
                 String clientId = payload.split("#")[0];
                 String deviceMessage = payload.split("#")[1];
                 System.out.println(String.format("[%s] : %s", clientId, deviceMessage));
-                System.out.println();
+
+                webSocket.convertAndSend("/topic/stats", new Content(String.format("[%s] : %s", clientId, deviceMessage)));
+
             } catch (Throwable t) {
                 t.printStackTrace();
             }
